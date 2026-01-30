@@ -40,6 +40,10 @@ public class ThirdPersonMovement : MonoBehaviour
     [Header("Draw Sword")]
     public KeyCode swordDrawKeyCode;
     public bool SwordDrawed = false;
+    [Header("Draw Sword Animation Config")]
+    public GameObject SwordTarget;
+    public GameObject BackPlacesTarget;
+    public GameObject HandTarget;
     // Start is called before the first frame update
     void Start()
     {
@@ -210,5 +214,16 @@ public class ThirdPersonMovement : MonoBehaviour
                 cinemachine.m_Lens.FieldOfView--;
             }
         }
+    }
+
+    //For AnimationEventHolder
+    public void Anim_SwordToBackPlacesTarget()
+    {
+        SwordTarget.transform.SetParent(BackPlacesTarget.transform);
+    }
+
+    public void Anim_SwordToBackHandTarget()
+    {
+        SwordTarget.transform.SetParent(HandTarget.transform);
     }
 }
