@@ -36,6 +36,10 @@ public class ThirdPersonMovement : MonoBehaviour
 
     //Test
     public Transform Frontobj;
+
+    [Header("Draw Sword")]
+    public KeyCode swordDrawKeyCode;
+    public bool SwordDrawed = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -56,7 +60,7 @@ public class ThirdPersonMovement : MonoBehaviour
         //Character Idle on the ground    
         //isGround = Physics.CheckSphere(transform.position, 0.01f);
         
-        if(isGround && velocity.y < 0.1)
+        if(!isGround && velocity.y < 0.1)
         {
             velocity.y = -1;
             //anim.SetBool("isGround", true);
@@ -81,6 +85,26 @@ public class ThirdPersonMovement : MonoBehaviour
             {
                 trueSpeed = walkSpeed;
                 Walking = true;
+            }
+        }
+
+        if (Input.GetKeyDown(swordDrawKeyCode))
+        {
+            if (isGround)
+            {
+                if (!SwordDrawed)
+                {
+                    SwordDrawed = true;
+                    anim.SetBool("DrawedSword", true);
+
+                }
+                else
+                {
+                    SwordDrawed = false;
+                    anim.SetBool("DrawedSword", false);
+                    anim.SetTrigger("PlaceBackSword");
+                    Debug.Log("PlaceSword");
+                }
             }
         }
 
@@ -115,7 +139,7 @@ public class ThirdPersonMovement : MonoBehaviour
             {
             //anim.SetBool("Jumping", true);
             anim.SetBool("isGround", false);
-            //Jumping = true;
+            isGround = false;
             velocity.y = Mathf.Sqrt((jumpHeight * 10) * -2f * jumpGravity);
             //velocity.y = Mathf.Sqrt(jumpHeight * -2 * jumpGravity);
             }
