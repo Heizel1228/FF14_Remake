@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class Abilites : MonoBehaviour
 {
+    public Camera cam;
+
     [Header("Ability 1")]
     public Image abilityImage1;
     public float cooldown1 = 5;
@@ -16,6 +18,14 @@ public class Abilites : MonoBehaviour
     public float cooldown2 = 5;
     bool isCooldown2 = false;
     public KeyCode ability2;
+    //Ability 2 Input Variables
+    Vector3 position;
+    public Image targetCircle;
+    public Image indicatorRangeCircle;
+    public Canvas ability2Canvas;
+    private Vector3 posUp;
+    public float maxAbility2Distance;
+
 
     [Header("Ability 3")]
     public Image abilityImage3;
@@ -28,6 +38,10 @@ public class Abilites : MonoBehaviour
         abilityImage1.fillAmount = 0;
         abilityImage2.fillAmount = 0;
         abilityImage3.fillAmount = 0;
+
+        targetCircle.GetComponent<Image>().enabled = false;
+        indicatorRangeCircle.GetComponent<Image>().enabled = false;
+
     }
 
     // Update is called once per frame
@@ -36,6 +50,25 @@ public class Abilites : MonoBehaviour
         Ability1();
         Ability2();
         Ability3();
+
+        RaycastHit hit;
+        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+
+        //ability 2 inputs
+        if(Physics.Raycast(ray, out hit, Mathf.Infinity))
+        {
+            if(hit.collider.gameObject != this.gameObject)
+            {
+                posUp = new Vector3(hit.point.x, 10f, hit.point.z);
+                position = hit.point;
+            }
+        }
+        var hitPosDir = (hit.point - transform.position).normalized;
+        float distance = Vector3.Distance(hit.point, transform.position);
+        distance = Mathf.Min(distance, maxAbility2Distance);
+
+        var newHitPos = transform.position + hitPosDir * distance;
+        ability2Canvas.transform.position = (newHitPos);
     }
 
     void Ability1()
@@ -62,6 +95,12 @@ public class Abilites : MonoBehaviour
     {
         if (Input.GetKey(ability2) && isCooldown2 == false)
         {
+            indicatorRangeCircle.GetComponent<Image>().enabled = true;
+            targetCircle.GetComponent<Image>().enabled = true;
+        }
+
+        if(targetCircle.GetComponent<Image>().enabled ==true && Input.GetMouseButtonDown(0))
+        {
             isCooldown2 = true;
             abilityImage2.fillAmount = 1;
         }
@@ -69,6 +108,9 @@ public class Abilites : MonoBehaviour
         if (isCooldown2)
         {
             abilityImage2.fillAmount -= 1 / cooldown2 * Time.deltaTime;
+
+            indicatorRangeCircle.GetComponent<Image>().enabled = false;
+            targetCircle.GetComponent<Image>().enabled = false;
 
             if (abilityImage2.fillAmount <= 0)
             {
